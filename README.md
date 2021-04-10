@@ -1,38 +1,42 @@
 # RubyFtp
 
-Simple ftp client written in Ruby
+Simple ftp client written in Ruby to learn more about the protocol.
+Definitely not production ready or feature complete.
 
-## Installation
-
-Add this line to your application's Gemfile:
-
-```ruby
-gem 'ruby_ftp'
-```
-
-And then execute:
-
-    $ bundle install
-
-Or install it yourself as:
-
-    $ gem install ruby_ftp
+Implemented following the spec: https://tools.ietf.org/html/rfc959
 
 ## Usage
 
-TODO: Write usage instructions here
+Running a docker ftp server which serves files from the host machine's `/tmp/ftp` directory
 
-## Development
+```
+docker run -it -e LOG_STDOUT=YES -e FTP_USER=ftpuser -e FTP_PASS=ftpuser -e PASV_ENABLE=YES -e PASV_MIN_PORT=30000 -e PASV_MAX_PORT=30009 -e FTP_USER_HOME=/home/vsftpd -p 30000-30009:30000-30009 -p 20:20 -p 21:21 -v $(pwd)/ftp:/home/vsftpd/ftpuser --rm fauria/vsftpd
+```
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+Simple example:
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+```
+$ ruby ./examples/example.rb
+Connecting to 21 127.0.0.1
+client.banner:
+220 (vsFTPd 3.0.2)
 
-## Contributing
+client.help:
+530 Please login with USER and PASS.
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/ruby_ftp.
+client.login:
+230 Login successful.
 
+client.pwd:
+257 "/"
 
-## License
+client.ls:
+150 Here comes the directory listing.
+226 Directory send OK.
+-rw-r--r--    1 ftp      ftp             4 Apr 06 00:16 abc.txt
 
-The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
+client.cat:
+150 Opening BINARY mode data connection for abc.txt (4 bytes).
+226 Transfer complete.
+abc
+```
